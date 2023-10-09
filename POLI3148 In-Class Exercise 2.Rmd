@@ -1,0 +1,99 @@
+---
+title: "POLI3148 In-Class Exercise 2"
+author: "Megan Angeles"
+date: "2023-10-09"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading the Necessary Packages for the Exercise
+
+```{r}
+library(conflicted)
+library(tidyverse)
+library(dplyr)
+library(vdemdata)
+```
+
+## Importing and Exporting the V-Dem Data set
+
+```{r}
+d <- vdem
+```
+
+## 1. Code book Look up
+
+```{r}
+names(d)
+```
+
+1.  There are 9 indicators regarding the quality of education. They are Existence of universities (v2cauni), Total number of universities (v2canuni), Constitutional protection for academic freedom (v2caprotac), Freedom to research and teach (v2cafres), Freedom of academic exchange and dissemination (v2cafexch), Institutional autonomy (v2cainsaut), Campus integrity (v2casurv), Academics as critics (v2cacritic) and International legal commitment to academic freedom under ICESCR (v2caacadfree).
+
+2.  The data set covers 202 countries and goes back in time as far as 1789 until March 2023
+
+3.  The would the democracy report which would be released annually in the month of March by the V-Dem Institute. <https://www.v-dem.net/publications/democracy-reports/>
+
+## 2. Subset by Columns
+
+```{r}
+#Data set containing country year identifiers and indicators of education quality
+d_education <- d |> 
+  select(country_name, country_id, year, v2cauni, v2canuni, v2caprotac, v2cafres, v2cafexch, v2cainsaut, v2casurv, v2cacritic, v2caacadfree)
+d_education
+```
+
+```{r}
+# Renaming Columns
+d_education <- d_education |>
+  rename("ExistenceUniversities" = "v2cauni", "TotalNoUniversities" = "v2canuni", "ProtectionforAcademicFreedom" = "v2caprotac", "FreedomResearchTeach" = "v2cafres", "FreedomAcademicExchange" = "v2cafexch", "InstitutionalAutonomy" = "v2cainsaut", "CampusIntegrity" = "v2casurv", "AcademicsCritics" = "v2cacritic", "CommitmentICESCR" = "v2caacadfree", "Country" = "country_name", "ID" = "country_id", "Year" = "year")
+d_education
+```
+
+## 3. Subset by Rows
+
+```{r}
+#List 5 countries-years that have the highest education level among its population.
+d_education |> slice_max(order_by = TotalNoUniversities, n = 5)
+```
+
+```{r}
+#List 5 countries-years that suffer from the most severe inequality in education
+d_education |> slice_min(order_by = TotalNoUniversities, n = 5)
+```
+
+## 4. Summarize the Data
+
+1.  Check data availability: For which countries and years are the indicators of education quality available?
+
+```{r}
+d_education |> select(Country) |> distinct()
+```
+
+```{r}
+d_education |> select(Year) |> distinct()
+```
+
+2.  Create two types of country-level indicators of education quality.
+
+```{r}
+#Average level of education quality from 1984 to 2022
+filtered_data <- d_education %>%
+  filter(Year >= 1984 & Year <= 2022)
+average_education <- aggregate(FreedomResearchTeach ~ Year, filtered_data, mean)
+average_education
+```
+
+```{r}
+#Change of education quality from 1984 to 2022
+freedomrt <- aggregate(FreedomResearchTeach ~ Year, filtered_data, sum)
+change_ofeducation <- diff(freedomrt$FreedomResearchTeach)
+change_ofeducation
+
+```
+
+1.  Examine the data and *briefly* discuss: Which countries perform the best and the worst in terms of education quality in the past four decades?

@@ -1,0 +1,90 @@
+---
+title: "POLI3148 Project"
+author: "Megan Angeles"
+date: "2023-12-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read CSV File
+
+Retrieve the data set for Global Democracy Index
+
+```{r}
+dataset <- read.csv("data/gsod_indices_v7.csv")
+```
+
+## Libraries
+
+```{r}
+library(tidyverse)
+library(broom)
+library(knitr)
+library(kableExtra)
+```
+
+## Multiple Linear Regression
+
+You can also embed plots, for example:
+
+```{r}
+
+formula <- as.formula(paste("v_22_19", "~ v_11_04 + v_11_05 + v_13_03 + v_13_05 + v_14_03 + v_15_02 + v_15_03 + v_16_02 + v_13_01"))
+
+model <- lm(formula, data = dataset)
+
+
+models_list[[variable_descriptions[dep_var]]] <- model
+
+
+lapply(models_list, summary)
+
+```
+
+```{r}
+library(scatterplot3d)
+
+# Create a 3D scatter plot
+plot <- scatterplot3d(
+  dataset$v_11_04, dataset$v_11_05, dataset$v_22_19,
+  color = "blue",   # Adjust color as needed
+  main = "3D Scatter Plot",
+  xlab = "Election government intimidation",
+  ylab = "Election free and fair",
+  zlab = "Media Freedom"
+)
+
+plot2 <- scatterplot3d(
+  dataset$v_13_05, dataset$v_14_03, dataset$v_22_19,
+  color = "red",
+  main = "3D Scatter plot 2",
+  xlab = "Competitiveness of participation",
+  ylab = "Openness of executive recruitment",
+  zlab = "Media Freedom"
+)
+plot3 <- scatterplot3d(
+  dataset$v_15_02, dataset$v_15_03, dataset$v_22_19,
+  color = 'purple',
+  main = "3D Scatter plot 3",
+  xlab = "Executive oversight",
+  ylab = "Legislature investigates in practice",
+  zlab = "Media Freedom"
+)
+plot4 <- scatterplot3d(
+  dataset$v_16_02, dataset$v_13_01, dataset$v_22_19,
+  color = 'black',
+  main = "3D Scatter plot 4",
+  xlab = "Subnational elections free and fair",
+  ylab = "Party ban",
+  zlab = "Media Freedom"
+  
+)
+
+```
+
+```{r}
+
+```
